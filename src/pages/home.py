@@ -6,9 +6,9 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from src.components.profile_page import Profile
 from src.LocalData.settings import AppSettings
 from src.components.main_page import main_page
-from src.components.profile_page import profile_page
 
 
 class Home(QWidget):
@@ -29,7 +29,7 @@ class Home(QWidget):
             nav_bar.setContentsMargins(0, 0, 0, 0)
             nav_bar.setSpacing(0)
 
-            username = self.settings.load_credentials()
+            username, email = self.settings.load_credentials()
 
             button_style = """
                 QPushButton {
@@ -53,17 +53,17 @@ class Home(QWidget):
             btn_profile.clicked.connect(self.render_profile)
 
             self.main_stacked_widget = QStackedWidget()
-            self.main_stacked_widget.setContentsMargins(0,0,0,0)
+            self.main_stacked_widget.setContentsMargins(0, 0, 0, 0)
 
             self.main_home_widget = main_page()
-            self.main_profile_widget = profile_page()
+            self.main_profile_widget = Profile().profile_page()
             self.main_stacked_widget.addWidget(self.main_home_widget)
             self.main_stacked_widget.addWidget(self.main_profile_widget)
 
             signin_btn = None
             logout_btn = None
 
-            if not username:
+            if not username or not email:
                 signin_btn = QPushButton("SignIn")
                 signin_btn.setStyleSheet(button_style)
                 nav_bar.addWidget(signin_btn)
@@ -77,7 +77,7 @@ class Home(QWidget):
             nav_widget = QWidget()
             nav_widget.setLayout(nav_bar)
             nav_widget.setFixedWidth(150)
-            nav_widget.setContentsMargins(0,0,0,0)
+            nav_widget.setContentsMargins(0, 0, 0, 0)
             nav_widget.setStyleSheet("background-color: #424242;")
 
             main_layout.addWidget(nav_widget)
@@ -93,6 +93,6 @@ class Home(QWidget):
                 return logout_btn
         except Exception as e:
             print(e)
-    
+
     def render_profile(self):
         self.main_stacked_widget.setCurrentWidget(self.main_profile_widget)

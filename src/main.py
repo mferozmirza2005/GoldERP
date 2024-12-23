@@ -29,7 +29,7 @@ class GoldERP(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        self.stacked_widget.setContentsMargins(0,0,0,0)
+        self.stacked_widget.setContentsMargins(0, 0, 0, 0)
 
         self.home_page = Home()
         self.signin_page = SignIn(self.show_home, self.show_signup)
@@ -51,12 +51,12 @@ class GoldERP(QMainWindow):
         menubar.addMenu(HomeMenu)
 
     def show_home(self):
-        username = self.settings.load_credentials()
+        username, email = self.settings.load_credentials()
 
         self.stacked_widget.setCurrentWidget(self.home_page)
         home_button = self.home_page.render_home()
 
-        if not username:
+        if not username or not email:
             self.stacked_widget.addWidget(self.signin_page)
             home_button.clicked.connect(self.show_signin)
         else:
@@ -111,7 +111,7 @@ class GoldERP(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        self.stacked_widget.setContentsMargins(0,0,0,0)
+        self.stacked_widget.setContentsMargins(0, 0, 0, 0)
 
         self.home_page = Home()
         self.signin_page = SignIn(self.show_home, self.show_signup)
@@ -133,12 +133,12 @@ class GoldERP(QMainWindow):
         menubar.addMenu(HomeMenu)
 
     def show_home(self):
-        username = self.settings.load_credentials()
+        username, email = self.settings.load_credentials()
 
         self.stacked_widget.setCurrentWidget(self.home_page)
         home_button = self.home_page.render_home()
 
-        if not username:
+        if not username or not email:
             self.stacked_widget.addWidget(self.signin_page)
             home_button.clicked.connect(self.show_signin)
         else:
