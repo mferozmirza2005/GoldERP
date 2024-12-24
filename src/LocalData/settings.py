@@ -32,6 +32,17 @@ class AppSettings:
 
         return "Credentials saved successfully."
 
+    def update_credentials(self, username, email):
+        cipher = Fernet(self.key)
+
+        encrypted_username = cipher.encrypt(username.encode()).decode()
+        encrypted_email = cipher.encrypt(email.encode()).decode()
+
+        self.settings.setValue("username", encrypted_username)
+        self.settings.setValue("email", encrypted_email)
+
+        return "Credentials updated successfully."
+
     def load_credentials(self) -> tuple:
         cipher = Fernet(self.key)
 
