@@ -17,10 +17,10 @@ import re
 
 
 class SignUp(QWidget):
-    def __init__(self, show_home, show_signin):
+    def __init__(self, show_registration_success, show_signin):
         super().__init__()
 
-        self.show_home = show_home
+        self.show_registration_success = show_registration_success
         self.show_signin = show_signin
         self.settings = AppSettings()
 
@@ -187,8 +187,6 @@ class SignUp(QWidget):
             user = User(username, email, password).to_dict()
 
             message = db_manager.save_user(username, email, password, user["created_at"])
-            self.settings.save_credentials(username, email, "--", user["created_at"])
-            QMessageBox.information(self, "Success", message)
-            self.show_home()
+            self.show_registration_success()
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Got error in saving credentials: {e}")

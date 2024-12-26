@@ -16,10 +16,12 @@ import re
 
 
 class SignIn(QWidget):
-    def __init__(self, show_home, show_signup):
+    def __init__(self, show_home, show_registration_success, show_signup):
         super().__init__()
-        self.show_home = show_home
+        self.show_registration_success = show_registration_success
         self.show_signup = show_signup
+        self.show_home = show_home
+
         self.settings = AppSettings()
 
         main_layout = QHBoxLayout()
@@ -156,6 +158,14 @@ class SignIn(QWidget):
         try:
             message = db_manager.verify_user(username, password)
 
+            self.username_input.clear()
+            self.password_input.clear()
+
+            user = db_manager.get_user(username)
+
+            if user["approved"] == False:
+                self.show_registration_success()
+
             if message != "User matched successfully.":
                 QMessageBox.warning(
                     self,
@@ -163,11 +173,6 @@ class SignIn(QWidget):
                     "Please fill the valid details."
                 )
                 return
-
-            self.username_input.clear()
-            self.password_input.clear()
-
-            user = db_manager.get_user(username)
 
             message = self.settings.save_credentials(username, user["email"], user["role"], user["created_at"])
             QMessageBox.information(self, "Success", message)

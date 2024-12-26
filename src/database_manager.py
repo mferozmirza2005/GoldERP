@@ -28,20 +28,21 @@ class DatabaseManager:
                 "email": email,
                 "password": salted_pwd,
                 "role": "--",
+                "approved": False,
                 "created_at": created_at,
             }
             users_collection.insert_one(user)
-            return "User successfully registered."
+            return "User successfully registered, Waiting for approval."
         except PyMongoError as e:
             return f"Failed to save user: {e}"
 
-    def update_user(self, updated_username: str, updated_email: str, updated_role: str, email: str) -> str:
+    def update_user(self, updated_username: str, updated_email: str, email: str) -> str:
         try:
             users_collection = self.db["users"]
 
             users_collection.update_one(
                 {"_id": ObjectId(users_collection.find_one({"email": email})["_id"])},
-                {"$set": {"username": updated_username, "email": updated_email, "role": updated_role}},
+                {"$set": {"username": updated_username, "email": updated_email}},
             )
             return "User successfully registered."
         except PyMongoError as e:
@@ -51,6 +52,13 @@ class DatabaseManager:
         try:
             user = self.db["users"].find_one({"username": username})
             return user
+        except Exception as e:
+            return f"Failed to fetch user: {e}"
+
+    def get_all_user(self) -> list | str:
+        try:
+            users = self.db["users"].find().to_list()
+            return users
         except Exception as e:
             return f"Failed to fetch user: {e}"
 

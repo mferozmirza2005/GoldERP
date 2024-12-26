@@ -1,3 +1,4 @@
+from src.pages.registration_success import Registration_Success
 from src.LocalData.settings import AppSettings
 from src.pages.signin import SignIn
 from src.pages.signup import SignUp
@@ -30,12 +31,16 @@ class GoldERP(QMainWindow):
         self.stacked_widget.setContentsMargins(0, 0, 0, 0)
 
         self.home_page = Home()
-        self.signin_page = SignIn(self.show_home, self.show_signup)
-        self.signup_page = SignUp(self.show_home, self.show_signin)
+        self.registration_success_page = (
+            Registration_Success().render_registration_success()
+        )
+        self.signin_page = SignIn(self.show_home, self.show_registration_success, self.show_signup)
+        self.signup_page = SignUp(self.show_registration_success, self.show_signin)
 
         self.stacked_widget.addWidget(self.home_page)
         self.stacked_widget.addWidget(self.signin_page)
         self.stacked_widget.addWidget(self.signup_page)
+        self.stacked_widget.addWidget(self.registration_success_page)
 
         self.show_home()
         self.create_menu_bar()
@@ -66,6 +71,9 @@ class GoldERP(QMainWindow):
 
     def show_signup(self):
         self.stacked_widget.setCurrentWidget(self.signup_page)
+
+    def show_registration_success(self):
+        self.stacked_widget.setCurrentWidget(self.registration_success_page)
 
     def logout_user(self):
         self.settings.clear_credentials()
