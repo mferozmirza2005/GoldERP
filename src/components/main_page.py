@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QLabel
 )
 
+
 def main_page():
     page_layout = QVBoxLayout()
     page_layout.setContentsMargins(0,0,0,0)

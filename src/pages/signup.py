@@ -1,6 +1,5 @@
-import re
-
-from PyQt6.QtCore import Qt
+from src.database_manager import DatabaseManager
+from src.LocalData.settings import AppSettings
 from PyQt6.QtGui import QCursor
 from PyQt6.QtWidgets import (
     QHBoxLayout,
@@ -12,10 +11,9 @@ from PyQt6.QtWidgets import (
     QWidget,
     QLabel,
 )
-
 from models.user import User
-from src.LocalData.settings import AppSettings
-from src.database_manager import DatabaseManager
+from PyQt6.QtCore import Qt
+import re
 
 
 class SignUp(QWidget):
@@ -189,7 +187,7 @@ class SignUp(QWidget):
             user = User(username, email, password).to_dict()
 
             message = db_manager.save_user(username, email, password, user["created_at"])
-            self.settings.save_credentials(username, email, user["created_at"])
+            self.settings.save_credentials(username, email, "--", user["created_at"])
             QMessageBox.information(self, "Success", message)
             self.show_home()
         except Exception as e:

@@ -1,3 +1,6 @@
+from src.components.profile_page import Profile
+from src.components.main_page import main_page
+from src.LocalData.settings import AppSettings
 from PyQt6.QtWidgets import (
     QStackedWidget,
     QHBoxLayout,
@@ -5,10 +8,6 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QWidget,
 )
-
-from src.components.profile_page import Profile
-from src.LocalData.settings import AppSettings
-from src.components.main_page import main_page
 
 
 class Home(QWidget):
@@ -29,7 +28,7 @@ class Home(QWidget):
             nav_bar.setContentsMargins(0, 0, 0, 0)
             nav_bar.setSpacing(0)
 
-            username, email = self.settings.load_credentials()
+            username, email, role = self.settings.load_credentials()
 
             button_style = """
                 QPushButton {

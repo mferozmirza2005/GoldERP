@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QPushButton,
     QFormLayout,
+    QComboBox,
     QLineEdit,
     QWidget,
     QLabel,
@@ -34,10 +35,11 @@ class Profile:
         )
         self.profile_layout.addWidget(self.profile_heading)
 
-        self.username, self.email = self.settings.load_credentials()
+        self.username, self.email, self.role = self.settings.load_credentials()
 
         self.username_label = QLabel(f"User Name: {self.username}")
         self.email_label = QLabel(f"Email: {self.email}")
+        self.role_label = QLabel(f"Role: {self.role}")
 
         self.label_style = """
             padding: 10px 30px 0px;
@@ -46,9 +48,11 @@ class Profile:
 
         self.username_label.setStyleSheet(self.label_style)
         self.email_label.setStyleSheet(self.label_style)
+        self.role_label.setStyleSheet(self.label_style)
 
         self.profile_layout.addWidget(self.username_label)
         self.profile_layout.addWidget(self.email_label)
+        self.profile_layout.addWidget(self.role_label)
 
         self.edit_btn = QPushButton("EDIT")
         self.edit_btn.setStyleSheet(
@@ -77,6 +81,7 @@ class Profile:
     def edit_profile(self):
         self.username_label.setParent(None)
         self.email_label.setParent(None)
+        self.role_label.setParent(None)
         self.edit_btn.setParent(None)
 
         self.profile_heading.setText("Edit Profile")
@@ -141,6 +146,40 @@ class Profile:
         )
         self.form_layout.addRow(self.email_edit_label, self.email_input)
 
+        self.role_edit_label = QLabel("Role:")
+        self.role_edit_label.setStyleSheet(
+            """
+            font-size: 18px;
+            padding: 10px 30px 0px;
+            """
+        )
+
+        self.role_dropdown = QComboBox()
+        self.roles = [
+            "--",
+            "Admin",
+            "Sales Man",
+        ]
+        self.role_dropdown.addItems(self.roles)
+        self.role_dropdown.setCurrentText(next((role for role in self.roles if role == self.role), ""))
+        self.role_dropdown.setStyleSheet(
+            """
+            QComboBox {
+                background-color: #111111;
+                margin: 10px 0px 0px;
+                border-radius: 5px;
+                font-size: 16px;
+                padding: 10px;
+            }
+            QComboBox::placeholder {
+                font-size: 18px;
+                color: #888;
+            }
+        """
+        )
+        self.role_dropdown.setFixedWidth(self.email_input.sizeHint().width() + 100)
+        self.form_layout.addRow(self.role_edit_label, self.role_dropdown)
+
         button_style = """
             QPushButton {
                 background-color: #0078d4;
@@ -195,9 +234,11 @@ class Profile:
         self.username_edit_label.setParent(None)
         self.cancel_btn_layout.setParent(None)
         self.email_edit_label.setParent(None)
+        self.role_edit_label.setParent(None)
         self.save_btn_layout.setParent(None)
         self.username_input.setParent(None)
         self.buttons_layout.setParent(None)
+        self.role_dropdown.setParent(None)
         self.email_input.setParent(None)
         self.form_layout.setParent(None)
         self.cancel_btn.setParent(None)
@@ -210,33 +251,37 @@ class Profile:
     def save_edit(self):
         updated_username = self.username_input.text()
         updated_email = self.email_input.text()
+        updated_role = self.role_dropdown.currentText()
 
         if not updated_username or updated_username.strip() == "" and not updated_email or updated_email.strip() == "":
             return
-        elif updated_username == self.username and updated_email == self.email:
+        elif updated_username == self.username and updated_email == self.email and updated_role == self.role:
             return
         
-
         try:
             self.database_manager.update_user(
-                updated_username, updated_email, self.email
+                updated_username, updated_email, updated_role, self.email
             )
-            self.settings.update_credentials(updated_username, updated_email)
+            self.settings.update_credentials(updated_username, updated_email, updated_role)
 
             self.username = updated_username
             self.email = updated_email
+            self.role = updated_role
 
             self.username_label.setText(f"User Name: {self.username}")
-            self.email_label.setText(f"User Name: {self.email}")
+            self.email_label.setText(f"Email: {self.email}")
+            self.role_label.setText(f"Role: {self.role}")
 
             self.profile_heading.setText("Your Profile")
 
             self.username_edit_label.setParent(None)
             self.cancel_btn_layout.setParent(None)
             self.email_edit_label.setParent(None)
+            self.role_edit_label.setParent(None)
             self.save_btn_layout.setParent(None)
             self.username_input.setParent(None)
             self.buttons_layout.setParent(None)
+            self.role_dropdown.setParent(None)
             self.email_input.setParent(None)
             self.form_layout.setParent(None)
             self.cancel_btn.setParent(None)
@@ -244,6 +289,7 @@ class Profile:
 
             self.profile_layout.insertWidget(1, self.username_label)
             self.profile_layout.insertWidget(2, self.email_label)
-            self.profile_layout.insertWidget(3, self.edit_btn)
+            self.profile_layout.insertWidget(3, self.role_label)
+            self.profile_layout.insertWidget(4, self.edit_btn)
         except Exception as e:
             return e

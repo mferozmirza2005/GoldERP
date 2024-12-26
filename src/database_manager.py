@@ -3,6 +3,7 @@ from pymongo.errors import PyMongoError
 from pymongo import MongoClient
 from models.user import User
 from bson import ObjectId
+import bcrypt
 
 
 class DatabaseManager:
@@ -18,10 +19,15 @@ class DatabaseManager:
             users_collection = self.db["users"]
             if users_collection.find_one({"email": email}):
                 raise Exception("A user with this email already exists.")
+            
+            salt = bcrypt.gensalt()
+            salted_pwd = bcrypt.hashpw(password.encode("utf-8"), salt)
+
             user = {
                 "username": username,
                 "email": email,
-                "password": password,
+                "password": salted_pwd,
+                "role": "--",
                 "created_at": created_at,
             }
             users_collection.insert_one(user)
@@ -29,13 +35,13 @@ class DatabaseManager:
         except PyMongoError as e:
             return f"Failed to save user: {e}"
 
-    def update_user(self, updated_username: str, updated_email: str, email: str) -> str:
+    def update_user(self, updated_username: str, updated_email: str, updated_role: str, email: str) -> str:
         try:
             users_collection = self.db["users"]
 
             users_collection.update_one(
                 {"_id": ObjectId(users_collection.find_one({"email": email})["_id"])},
-                {"$set": {"username": updated_username, "email": updated_email}},
+                {"$set": {"username": updated_username, "email": updated_email, "role": updated_role}},
             )
             return "User successfully registered."
         except PyMongoError as e:
@@ -51,7 +57,7 @@ class DatabaseManager:
     def verify_user(self, username: str, password: str) -> str:
         try:
             user = self.db["users"].find_one({"username": username})
-            if not user or user["password"] != password:
+            if not user or not bcrypt.checkpw(password.encode("utf-8"), user["password"]):
                 return "Incorrect credentials."
             else:
                 return "User matched successfully."
